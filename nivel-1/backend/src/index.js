@@ -1,5 +1,5 @@
 const express = require("express");
-const { uuid } = require("uuidv4");
+const { v4: uuid_v4 } = require("uuid");
 
 const app = express();
 
@@ -22,7 +22,26 @@ app.use(express.json());
  * Request Params: Conteúdo na hora de criar ou editar um recurso (JSON)
  */
 
+/**
+ * Middlewares:
+ * 
+ * Interceptador de requisições que pode interromper totalmente a requisição ou
+ * alterar dados da requisição
+ */
+
 const projects = [];
+
+function logRequests(request, response, next) {
+  const { method, url } = request;
+
+  const logLabel = `[${method.toUpperCase()}] ${url}`;
+
+  console.log(logLabel);
+
+  return next();
+}
+
+app.use(logRequests);
 
 app.get("/projects", (request, response) => {
 
@@ -39,7 +58,7 @@ app.post("/projects", (request, response) => {
 
   const { title, owner } = request.body;
 
-  const project = { id: uuid(), title, owner };
+  const project = { id: uuid_v4(), title, owner };
 
   projects.push(project);
 
